@@ -117,22 +117,30 @@ export default function SampleViewAdmin() {
     });
   };
 
-  const parseExportData = (data: string) =>
-    data
-      .trim()
-      .split("\n")
-      .map((row: string) =>
-        row
-          .trim()
-          .split(",")
-          .map((field: string) =>
-            new Date(field).toString() === "Invalid Date"
-              ? field
-              : formatDateTime(field),
-          )
-          .join(","),
-      )
-      .join("\n");
+  const parseExportData = (data: string) => {
+    const rows = data.trim().split("\n");
+    const headerColumns = rows[0].split(",");
+
+    return [
+      rows[0],
+      ...rows.slice(1).map((row) => {
+        const columns = row.split(",").map((field, index) => {
+          const header = headerColumns[index]?.trim();
+
+          if (header === "Patient Age") {
+            return field.trim();
+          }
+
+          if (header === "Date of Sample" || header === "Date of Result") {
+            return formatDateTime(field.trim());
+          }
+          return field.includes(",") ? `"${field.trim()}"` : field.trim();
+        });
+
+        return columns.join(",");
+      }),
+    ].join("\n");
+  };
 
   let sampleList: any[] = [];
   if (sampeleData?.count) {
