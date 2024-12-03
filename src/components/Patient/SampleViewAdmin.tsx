@@ -132,7 +132,8 @@ export default function SampleViewAdmin() {
           }
 
           if (header === "Date of Sample" || header === "Date of Result") {
-            return formatDateTime(field.trim());
+            const formattedDate = formatDateTime(field.trim());
+            return formattedDate === "Invalid Date" ? "" : formattedDate;
           }
           return field.includes(",") ? `"${field.trim()}"` : field.trim();
         });
