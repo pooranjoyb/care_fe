@@ -118,20 +118,20 @@ export default function SampleViewAdmin() {
   };
 
   const parseExportData = (data: string) => {
-    const rows = data.trim().split("\n");
-    const headerColumns = rows[0].split(",");
+    const [header, ...rows] = data.trim().split("\n");
+    const headerColumns = header.split(",").map((col) => col.trim());
 
     return [
-      rows[0],
-      ...rows.slice(1).map((row) => {
+      header,
+      ...rows.map((row) => {
         const columns = row.split(",").map((field, index) => {
-          const header = headerColumns[index]?.trim();
+          const header = headerColumns[index];
 
           if (header === "Patient Age") {
             return field.trim();
           }
 
-          if (header === "Date of Sample" || header === "Date of Result") {
+          if (["Date of Sample", "Date of Result"].includes(header)) {
             const formattedDate = formatDateTime(field.trim());
             return formattedDate === "Invalid Date" ? "" : formattedDate;
           }
